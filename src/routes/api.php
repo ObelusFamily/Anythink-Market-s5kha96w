@@ -46,3 +46,32 @@ Route::get('/ping_mongo/', function (Request  $request) {
   
     return ['msg' => 'executed', 'bsondoc' => $mdb_bsondoc];
   });
+
+  Route::get('/testwithphp/', function (Request  $request) {
+    $mongodbquery = [ "title" => "The Shawshank Redemption" ];                
+    $mdb_collection = DB::connection('mongodb')->getCollection('reels');                
+  
+    $mdb_bsondoc= $mdb_collection->findOne( $mongodbquery );
+    
+    $output = $mdb_bsondoc['title'] . "<br>" . $mdb_bsondoc['directors'][0];
+    $testArray = ['msg' => 'executed', 'bsondoc' => $output];
+    // return ['msg' => 'executed', 'bsondoc' => $mdb_bsondoc];
+    // return $output;
+    foreach ($mdb_bsondoc as $key => $value) {
+      if (gettype($value) === "string" || gettype($value) === "integer" ) {
+        echo "[" . $key . "] => " . $value . "<br>";
+      } else if(gettype($value) === "object") {
+        echo "[" . $key . "]<br>";
+        foreach ($value as $object => $i) {
+          if (gettype($i) === "string" || gettype($i) === "integer" ) {
+          echo "[~" . $object . "~] => " . $i . "<br>";
+          } else {
+            echo "[" . $object . "] => " . gettype($i) . "<br>";
+          }
+        }
+      }
+    }
+
+
+    return $testArray['msg'];
+  });
